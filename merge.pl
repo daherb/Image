@@ -1,16 +1,20 @@
 use strict;
 use warnings;
-use List::Util qw(max);
+use List::Util qw(min max);
 use Image::Imlib2;
 
 {
-  my $i1 = Image::Imlib2->load("bild1.png");
-  my $i2 = Image::Imlib2->load("bild1.png");
-  my $image = Image::Imlib2->new(200, 200);
+  my $i1 = Image::Imlib2->load($ARGV[0]);
+  my $i2 = Image::Imlib2->load($ARGV[1]);
+  my $maxx = max $i1->width, $i2->width;
+  my $maxy = max $i1->height, $i2->height;
+  my $minx = min $i1->width, $i2->width;
+  my $miny = min $i1->height, $i2->height;
+  my $image = Image::Imlib2->new($maxx, $maxy);
   $image->image_set_format("tiff");
-  for (my $ct1=0;$ct1<200;$ct1++)
+  for (my $ct1=0;$ct1<$maxx;$ct1++)
   {
-    for (my $ct2=0;$ct2<200;$ct2++)
+    for (my $ct2=0;$ct2<$maxy;$ct2++)
     {
       my ($r1,$g1,$b1,$a1)=$i1->query_pixel($ct1,$ct2);
       my ($r2,$g2,$b2,$a2)=$i2->query_pixel($ct1,$ct2);
@@ -25,5 +29,5 @@ use Image::Imlib2;
       $image->draw_point($ct1,$ct2);
     }
   }
-  $image->save("bild3.tif");
+  $image->save($ARGV[2]);
 }
